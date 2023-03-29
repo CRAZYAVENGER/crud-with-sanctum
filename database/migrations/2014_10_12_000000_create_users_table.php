@@ -15,7 +15,7 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
+            $table->string('first_name')->nullable();
             $table->string('last_name')->nullable();
             $table->string('mobile')->nullable();
             $table->string('profile_image')->nullable();
@@ -33,6 +33,11 @@ class CreateUsersTable extends Migration
      *
      * @return void
      */
+
+     protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+    
     public function down()
     {
         Schema::dropIfExists('users');

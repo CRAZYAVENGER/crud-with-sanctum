@@ -5,9 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
+use DB;
 
 class UserController extends Controller
 {
+
+    function __construct()
+    {
+        $this->middleware('permission:users-list|users-create|users-edit|users-delete', ['only' => ['index','show']]);
+        $this->middleware('permission:users-create', ['only' => ['create','store']]);
+        $this->middleware('permission:users-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:users-delete', ['only' => ['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -28,7 +38,8 @@ class UserController extends Controller
      */
     public function create()
     {
-       return view('users.create');
+        $roles = Role::pluck('name','name')->all();
+        return view('users.create',compact('roles'));
     }
 
     /**
@@ -40,7 +51,9 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'email' => 'required',
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'profile_image' => 'required|mimes:jpeg,jpg,png',
         ]);
@@ -52,7 +65,9 @@ class UserController extends Controller
         // password encode
         $input = $request->all();
         $input = Hash::make($request['password']);
-        User::create(array('input' => $input));
+        
+        $user_role = User::create(array('input' => $input));
+        $user_role->assignRole($request->input('roles'));
        
         return redirect()->route('users.index')
                         ->with('success','User created successfully.');
@@ -87,10 +102,12 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request, User $user, $id)
     {
         $request->validate([
-            'email' => 'required',
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'profile_image' => 'required|mimes:jpeg,jpg,png',
         ]);
@@ -103,6 +120,9 @@ class UserController extends Controller
         $input = $request->all();
         $input = Hash::make($request['password']);
         $user->update(array('input' => $input));
+        DB::table('model_has_roles')->where('model_id',$id)->delete();
+    
+        $user->assignRole($request->input('roles'));
       
         return redirect()->route('users.index')
                         ->with('success','User updated successfully');
