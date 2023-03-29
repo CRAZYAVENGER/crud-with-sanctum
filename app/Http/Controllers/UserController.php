@@ -46,8 +46,8 @@ class UserController extends Controller
         ]);
 
         // file upload
-        $fileName = time().'.'.$request->file->extension();
-        $request->file->move(public_path('uploads/profileImage'), $fileName);
+        $fileName = time().'.'.$request->profile_image->extension();
+        $request->profile_image->move(public_path('uploads/profileImage'), $fileName);
 
         // password encode
         $input = $request->all();
