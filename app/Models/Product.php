@@ -1,16 +1,20 @@
 <?php
-
+  
 namespace App\Models;
-
+  
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-class Project extends Model
+  
+class Product extends Model
 {
     use HasFactory;
-    // protected $table='projects';
+  
+    /**
+     * The attributes that are mass assignable.
+     *	
+     * @var array
+     */
     protected $fillable = [
-        'name',
-        'detail',
+        'name', 'detail'
     ];
 }

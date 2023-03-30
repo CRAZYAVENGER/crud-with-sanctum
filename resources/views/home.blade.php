@@ -14,10 +14,9 @@
                         </div>
                     @endif
 
-                    Welcome {{ Auth::user()->name }}
+                    {{ __('You are logged in!') }}
                 </div>
             </div>
-                <a class="btn btn-success mt-2" href="{{ route('users.create') }}"> Create New User</a>
         </div>
     </div>
 </div>

@@ -47,5 +47,7 @@
     </tr>
     @endforeach
 </table>
+
+
 {!! $roles->render() !!}
 @endsection
