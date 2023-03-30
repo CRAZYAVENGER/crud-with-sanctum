@@ -64,9 +64,9 @@ class UserController extends Controller
 
         // password encode
         $input = $request->all();
-        $input = Hash::make($request['password']);
+        $input['password'] = Hash::make($request['password']);
         
-        $user_role = User::create(array('input' => $input));
+        $user_role = User::create($input);
         $user_role->assignRole($request->input('roles'));
        
         return redirect()->route('users.index')
